@@ -47,7 +47,7 @@ for i in range(num_of_enemies):
     enemyImg.append(pygame.image.load('resources/enemy.png'))
     enemyX.append(random.randint(5, 750))
     enemyY.append(random.randint(25, 125))
-    enemyX_change.append(4.5)
+    enemyX_change.append(3.5)
 
 #Bullet
 #if bullet_state = ready, you can't see the bullet
@@ -112,7 +112,7 @@ if __name__ == "__main__":
                     playerX_change = 5
                 if event.key == pygame.K_SPACE:
                     if bullet_state is 'ready':
-                        bullet_sound = mixer.Sound('resources/laser.wav')
+                        bullet_sound = mixer.Sound('resources/laser.wav') #load sound and play it
                         bullet_sound.play()
                         bulletX = playerX
                         bullet_state = 'fire'
@@ -129,10 +129,10 @@ if __name__ == "__main__":
         for i in range(num_of_enemies):
             enemyX[i] += enemyX_change[i]
             if enemyX[i] + enemyX_change[i] > window_w - enemy_w:
-                enemyX_change[i] = -2.5
+                enemyX_change[i] = -3.5
                 enemyY[i] += enemy_w #the width of the enemy is the same as the enemy height
             elif enemyX[i] + enemyX_change[i] < 0:
-                enemyX_change[i] = 2.5
+                enemyX_change[i] = 3.5
                 enemyY[i] += enemy_w
 
             #Collision
@@ -143,13 +143,11 @@ if __name__ == "__main__":
                 bulletY = 480
                 enemyX[i] = random.randint(5, 750)  #reposition enemy
                 enemyY[i] = random.randint(25, 125)
-                enemyX_change[i] = 4.5
+                enemyX_change[i] = 3.5
                 bullet_state = 'ready'
                 score_value += 1
 
             if enemyY[i] + enemy_w >= window_h - enemy_w:
-                for j in range(num_of_enemies):
-                    enemyY[j] = 2000
                 running = False
                 gameOverText()
 
