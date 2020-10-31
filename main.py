@@ -97,8 +97,54 @@ def isCollision(enemyX, enemyY, bulletX, bulletY):
         return True
     return False
 
-running = False
+def resetGameState():
+    #Player
+    global playerImg
+    global playerX
+    global playerY
+    global playerX_change
+    global player
+    #Enemy
+    global enemyImg
+    global enemyX
+    global enemyY
+    global enemyX_change
+    #Bullet
+    global bulletImg
+    global bulletX
+    global bulletY
+    global bulletY_change
+    global bullet_state
+    #Score
+    global score_value
+    #Reseting values
+    playerImg = pygame.image.load('resources/player.png')
+    playerX = 370
+    playerY = 530
+    playerX_change = 0
+    #Enemy
+    enemyImg = []
+    enemyX = []
+    enemyY = []
+    enemyX_change = []
+
+    for i in range(num_of_enemies):
+        enemyImg.append(pygame.image.load('resources/enemy.png'))
+        enemyX.append(random.randint(5, 750))
+        enemyY.append(random.randint(25, 125))
+        enemyX_change.append(3.5)
+    #Bullet
+    bulletImg = pygame.image.load('resources/bullet.png')
+    bulletX = 0
+    bulletY = 530
+    bulletY_change = 15
+    bullet_state = 'ready'
+    #score
+    score_value = 0
+
 intro = True
+running = False
+playing = False
 
 if __name__ == "__main__":
     #start menu
@@ -122,6 +168,7 @@ if __name__ == "__main__":
         if 180 + 200 > mouse[0] > 180 and 300 + 100 > mouse[1] > 300:
             pygame.draw.rect(window, (40, 240, 40), (180, 300, 200, 100))
             if click[0] == 1:
+                playing = True
                 running = True
                 break
         else:
@@ -150,77 +197,128 @@ if __name__ == "__main__":
 
     #main game
     while running:
+        while playing:
 
-        window.blit(background, (0, 0))
+            window.blit(background, (0, 0))
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    break
 
-            #controlling movement of the spaceship
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    playerX_change = -5
-                if event.key == pygame.K_RIGHT:
-                    playerX_change = 5
-                if event.key == pygame.K_SPACE:
-                    if bullet_state is 'ready':
-                        bullet_sound = mixer.Sound('resources/laser.wav') #load sound and play it
-                        bullet_sound.play()
-                        bulletX = playerX
-                        bullet_state = 'fire'
+                #controlling movement of the spaceship
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        playerX_change = -5
+                    if event.key == pygame.K_RIGHT:
+                        playerX_change = 5
+                    if event.key == pygame.K_SPACE:
+                        if bullet_state is 'ready':
+                            bullet_sound = mixer.Sound('resources/laser.wav') #load sound and play it
+                            bullet_sound.play()
+                            bulletX = playerX
+                            bullet_state = 'fire'
 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    playerX_change = 0
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                        playerX_change = 0
 
-        #controlling boundaries of the window for the player
-        if playerX + playerX_change > window_w - spaceship_w or playerX + playerX_change < 0:
-            playerX_change = 0
+            #controlling boundaries of the window for the player
+            if playerX + playerX_change > window_w - spaceship_w or playerX + playerX_change < 0:
+                playerX_change = 0
 
-        #controlling boundaries of the window for the enemy on the X axis
-        for i in range(num_of_enemies):
-            enemyX[i] += enemyX_change[i]
-            if enemyX[i] + enemyX_change[i] > window_w - enemy_w:
-                enemyX_change[i] = -3.5
-                enemyY[i] += enemy_w #the width of the enemy is the same as the enemy height
-            elif enemyX[i] + enemyX_change[i] < 0:
-                enemyX_change[i] = 3.5
-                enemyY[i] += enemy_w
+            #controlling boundaries of the window for the enemy on the X axis
+            for i in range(num_of_enemies):
+                enemyX[i] += enemyX_change[i]
+                if enemyX[i] + enemyX_change[i] > window_w - enemy_w:
+                    enemyX_change[i] = -3.5
+                    enemyY[i] += enemy_w #the width of the enemy is the same as the enemy height
+                elif enemyX[i] + enemyX_change[i] < 0:
+                    enemyX_change[i] = 3.5
+                    enemyY[i] += enemy_w
 
-            #Collision
-            collision = isCollision(enemyX[i], enemyY[i], bulletX, bulletY)
-            if collision:
-                explosion_sound = mixer.Sound('resources/explosion.wav')
-                explosion_sound.play()
-                bulletY = 480
-                enemyX[i] = random.randint(5, 750)  #reposition enemy
-                enemyY[i] = random.randint(25, 125)
-                enemyX_change[i] = 3.5
+                #Collision
+                collision = isCollision(enemyX[i], enemyY[i], bulletX, bulletY)
+                if collision:
+                    explosion_sound = mixer.Sound('resources/explosion.wav')
+                    explosion_sound.play()
+                    bulletY = 480
+                    enemyX[i] = random.randint(5, 750)  #reposition enemy
+                    enemyY[i] = random.randint(25, 125)
+                    enemyX_change[i] = 3.5
+                    bullet_state = 'ready'
+                    score_value += 1
+
+                if enemyY[i] + enemy_w >= window_h - enemy_w:
+                    playing = False
+                    window.blit(background, (0, 0))
+                    gameOverText()
+                    gameOver = True
+
+                    while gameOver:
+
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                running = False
+                                break
+
+                        mouse = pygame.mouse.get_pos()
+                        click = pygame.mouse.get_pressed()
+
+                        #green play button
+                        if 180 + 200 > mouse[0] > 180 and 400 + 100 > mouse[1] > 400:
+                            pygame.draw.rect(window, (40, 240, 40), (180, 400, 200, 100))
+                            if click[0] == 1:
+                                playing = True
+                                running = True
+                                resetGameState()
+                                break
+                        else:
+                            pygame.draw.rect(window, (40, 180, 40), (180, 400, 200, 100))
+
+                        #red quit button
+                        if 420 + 200 > mouse[0] > 420 and 400 + 100 > mouse[1] > 400:
+                            pygame.draw.rect(window, (220, 40, 40), (420, 400, 200, 100))
+                            if click[0] == 1:
+                                playing = False
+                                running = False
+                                break
+                        else:
+                            pygame.draw.rect(window, (180, 40, 40), (420, 400, 200, 100))
+
+                        playText = pygame.font.Font('freesansbold.ttf', 50)
+                        playSurf, playRect = textObjects("Play", playText)
+                        playRect.center = ((180 + (200 / 2)), (400 + (100 / 2)))
+                        window.blit(playSurf, playRect)
+
+                        quitText = pygame.font.Font('freesansbold.ttf', 50)
+                        quitSurf, quitRect = textObjects("Quit", quitText)
+                        quitRect.center = ((420 + (200 / 2)), (400 + (100 / 2)))
+                        window.blit(quitSurf, quitRect)
+                        pygame.display.update()
+                        clock.tick(30)
+                    break
+
+                enemy(enemyX[i], enemyY[i], i) #show enemy
+
+            playerX += playerX_change
+
+            #Bullet movement
+            if bulletY <= -20:
+                bulletY = 530
                 bullet_state = 'ready'
-                score_value += 1
 
-            if enemyY[i] + enemy_w >= window_h - enemy_w:
-                running = False
-                gameOverText()
+            if bullet_state is 'fire':
+                fire_bullet(bulletX, bulletY)
+                bulletY -= bulletY_change
 
-            enemy(enemyX[i], enemyY[i], i) #show enemy
+            player(playerX, playerY) #show the player
+            showScore(textX, textY)
+            pygame.display.update()
+            clock.tick(120)
 
-        playerX += playerX_change
-
-        #Bullet movement
-        if bulletY <= -20:
-            bulletY = 530
-            bullet_state = 'ready'
-
-        if bullet_state is 'fire':
-            fire_bullet(bulletX, bulletY)
-            bulletY -= bulletY_change
-
-        player(playerX, playerY) #show the player
-        showScore(textX, textY)
         pygame.display.update()
-        clock.tick(120)
+        clock.tick(30)
 
     pygame.mixer.quit()
     pygame.quit()
