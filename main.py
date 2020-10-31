@@ -68,6 +68,10 @@ textY = 10
 #Game over text
 over_font = pygame.font.Font('freesansbold.ttf', 64)
 
+def textObjects(text, font):
+    textSurface = font.render(text, True, (255, 255, 255)) #render the text with the font in white color
+    return textSurface, textSurface.get_rect()
+
 def showScore(x, y):
     score = font.render("Score: " + str(score_value), True, (0xFF, 0xFF, 0xFF))
     window.blit(score, (x, y))
@@ -93,9 +97,58 @@ def isCollision(enemyX, enemyY, bulletX, bulletY):
         return True
     return False
 
-running = True
+running = False
+intro = True
 
 if __name__ == "__main__":
+    #start menu
+    while intro:
+        window.blit(background, (0, 0))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                intro = False
+
+        #space invaders text in screen
+        largeText = pygame.font.Font('freesansbold.ttf', 50)
+        textSurf, textRect = textObjects("Space Invaders", largeText)
+        textRect.center = ((window_w/2), (window_h/2)-80)
+        window.blit(textSurf, textRect)
+
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        #green play button
+        if 180 + 200 > mouse[0] > 180 and 300 + 100 > mouse[1] > 300:
+            pygame.draw.rect(window, (40, 240, 40), (180, 300, 200, 100))
+            if click[0] == 1:
+                running = True
+                break
+        else:
+            pygame.draw.rect(window, (40, 180, 40), (180, 300, 200, 100))
+
+        #red quit button
+        if 420 + 200 > mouse[0] > 420 and 300 + 100 > mouse[1] > 300:
+            pygame.draw.rect(window, (220, 40, 40), (420, 300, 200, 100))
+            if click[0] == 1:
+                break
+        else:
+            pygame.draw.rect(window, (180, 40, 40), (420, 300, 200, 100))
+
+        playText = pygame.font.Font('freesansbold.ttf', 50)
+        playSurf, playRect = textObjects("Play", playText)
+        playRect.center = ((180 + (200 / 2)), (300 + (100 / 2)))
+        window.blit(playSurf, playRect)
+
+        quitText = pygame.font.Font('freesansbold.ttf', 50)
+        quitSurf, quitRect = textObjects("Quit", quitText)
+        quitRect.center = ((420 + (200 / 2)), (300 + (100 / 2)))
+        window.blit(quitSurf, quitRect)
+
+        pygame.display.update()
+        clock.tick(30)
+
+    #main game
     while running:
 
         window.blit(background, (0, 0))
