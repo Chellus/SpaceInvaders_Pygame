@@ -60,13 +60,13 @@ bullet_state = 'ready'
 
 #Score
 score_value = 0
-font = pygame.font.Font('freesansbold.ttf', 32)
+font = pygame.font.SysFont('comicsansms', 32)
 
 textX = 10
 textY = 10
 
 #Game over text
-over_font = pygame.font.Font('freesansbold.ttf', 64)
+over_font = pygame.font.SysFont('comicsansms', 64)
 
 def textObjects(text, font):
     textSurface = font.render(text, True, (255, 255, 255)) #render the text with the font in white color
@@ -156,7 +156,7 @@ if __name__ == "__main__":
                 intro = False
 
         #space invaders text in screen
-        largeText = pygame.font.Font('freesansbold.ttf', 50)
+        largeText = pygame.font.SysFont('comicsansms', 50)
         textSurf, textRect = textObjects("Space Invaders", largeText)
         textRect.center = ((window_w/2), (window_h/2)-80)
         window.blit(textSurf, textRect)
@@ -182,12 +182,12 @@ if __name__ == "__main__":
         else:
             pygame.draw.rect(window, (180, 40, 40), (420, 300, 200, 100))
 
-        playText = pygame.font.Font('freesansbold.ttf', 50)
+        playText = pygame.font.SysFont('comicsansms', 50)
         playSurf, playRect = textObjects("Play", playText)
         playRect.center = ((180 + (200 / 2)), (300 + (100 / 2)))
         window.blit(playSurf, playRect)
 
-        quitText = pygame.font.Font('freesansbold.ttf', 50)
+        quitText = pygame.font.SysFont('comicsansms', 50)
         quitSurf, quitRect = textObjects("Quit", quitText)
         quitRect.center = ((420 + (200 / 2)), (300 + (100 / 2)))
         window.blit(quitSurf, quitRect)
@@ -204,6 +204,7 @@ if __name__ == "__main__":
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    playing = False
                     break
 
                 #controlling movement of the spaceship
@@ -286,12 +287,12 @@ if __name__ == "__main__":
                         else:
                             pygame.draw.rect(window, (180, 40, 40), (420, 400, 200, 100))
 
-                        playText = pygame.font.Font('freesansbold.ttf', 50)
+                        playText = pygame.font.SysFont('comicsansms', 50)
                         playSurf, playRect = textObjects("Play", playText)
                         playRect.center = ((180 + (200 / 2)), (400 + (100 / 2)))
                         window.blit(playSurf, playRect)
 
-                        quitText = pygame.font.Font('freesansbold.ttf', 50)
+                        quitText = pygame.font.SysFont('comicsansms', 50)
                         quitSurf, quitRect = textObjects("Quit", quitText)
                         quitRect.center = ((420 + (200 / 2)), (400 + (100 / 2)))
                         window.blit(quitSurf, quitRect)
